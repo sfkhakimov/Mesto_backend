@@ -11,35 +11,35 @@ import './style.css';
 
 const moduleObj = (function () {
     const dataCardObj = {};
-    const createCard = (...args) => new PlaceCard(...args, openCard.creatImage.bind(openCard), api);
+    const createCard = (...args) => new PlaceCard(...args, image.creatImage.bind(image), api);
 
-    const userInfo = document.querySelector('.user-info');
+    const infoUser = document.querySelector('.user-info');
     const form = document.forms.newCard;
     const api = new Api({
-        baseUrl: 'http://praktikum.tk/cohort7/',
+        baseUrl: 'https://praktikum.tk/cohort7/',
         headers: {
             authorization: '6e068203-0879-465a-8f7e-859354fab07f',
             'Content-Type': 'application/json'
         }
         });
 
-    const openCard = new Image(document.querySelector('.places-list'));
+    const image = new Image(document.querySelector('.places-list'));
     const popup = new Popup(document.querySelector('.popup'), document.querySelector('.popup__close'));
-    const cardlist = new PlacesList(document.querySelector('.places-list'), createCard, api);
+    const placesList = new PlacesList(document.querySelector('.places-list'), createCard, api);
 
-    const validateForm = new FormValidate(document.forms.newCard);
-    const infoUser = new UserInfo(document.querySelector('.user-info__name'), document.querySelector('.user-info__job'), api);
+    const formValidate = new FormValidate(document.forms.newCard);
+    const userInfo = new UserInfo(document.querySelector('.user-info__name'), document.querySelector('.user-info__job'), api);
 
-    const profileEditPopup = new UserInfoName(popup, infoUser);
-    const cardEditPopup = new PlaceCardPopup(popup, cardlist, api);
+    const userInfoName = new UserInfoName(popup, userInfo);
+    const placeCardPopup = new PlaceCardPopup(popup, placesList, api);
 
-    userInfo.addEventListener('click', function(event) {
+    infoUser.addEventListener('click', function(event) {
         if(event.target.classList.contains('user-info__edit-button')) {
-            profileEditPopup.open();
+            userInfoName.open();
         }
 
         if(event.target.classList.contains('user-info__button')) {
-            cardEditPopup.open();
+            placeCardPopup.open();
         }
     });
 
@@ -47,21 +47,21 @@ const moduleObj = (function () {
     form.addEventListener('submit', function(event) {
         event.preventDefault();
         if(event.target.elements.button === document.querySelector('#content')) {
-            cardEditPopup.submitHandler()
+            placeCardPopup.submitHandler()
         }
 
         if(event.target.elements.button === document.querySelector('#edit')) {
-            profileEditPopup.submitHandler()
+            userInfoName.submitHandler()
         }
     })
 
-    validateForm.setEventListeners(form);
+    formValidate.setEventListeners(form);
 
     // Загрузка началных карточек
-    cardlist.render();
+    placesList.render();
     
     // Получение данных профиля
-    infoUser.setUserInfo();
+    userInfo.setUserInfo();
 
     return dataCardObj;
 }());
