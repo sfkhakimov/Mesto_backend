@@ -1,8 +1,9 @@
-class CardEditPopup extends Popup {
-    constructor(container, cardlist, api) {
+import Popup from '../../popup/Popup.js';
+
+export default class UserInfoName extends Popup {
+    constructor(container, infoUser) {
       super(container.element, container.elemClose);
-      this.cardlist = cardlist;
-      this.api = api;
+      this.infoUser = infoUser;
       this.popupTitle = document.querySelector('.popup__title');
       this.popupForm = document.forms.newCard;
       this.formTitle = this.popupForm.elements.name;
@@ -14,24 +15,26 @@ class CardEditPopup extends Popup {
   
     open() {
       super.open(); 
-      this.popupTitle.textContent = 'Новое место';
+      this.popupTitle.textContent = 'Редактировать профиль';
       this.formTitle.setAttribute('type', 'text');
-      this.formSubtitle.setAttribute('type', 'url');
-      this.formTitle.setAttribute('placeholder', 'Название');
-      this.formSubtitle.setAttribute('placeholder', 'Ссылка на картинку');
+      this.formSubtitle.setAttribute('type', 'text');
+      this.formTitle.setAttribute('placeholder', 'Имя');
+      this.formSubtitle.setAttribute('placeholder', 'О себе');
       this.formTitle.setAttribute('minlength', '2');
+      this.formSubtitle.setAttribute('minlength', '2');
       this.formTitle.setAttribute('maxlength', '30');
-      this.button.textContent = '+';
+      this.formSubtitle.setAttribute('maxlength', '30');
+      this.button.textContent = 'Сохранить';
       this.button.setAttribute('disabled', true);
-      this.button.setAttribute('id', 'content');
+      this.button.setAttribute('id', 'edit');
       this.button.removeAttribute('style', 'background-color: black; color: white');
+      const profileValue = this.infoUser.getUserInfo();
+      this.formTitle.value = profileValue.name;
+      this.formSubtitle.value = profileValue.about;
     }
   
     submitHandler() {
-      this.api.setCards(this.formTitle.value, this.formSubtitle.value)
-      .then((res) => {
-        this.cardlist.addCard(res);
-      })
+      this.infoUser.updateUserInfo(this.formTitle.value, this.formSubtitle.value);
       this.popupForm.reset();
       super.close();
     }

@@ -1,4 +1,4 @@
-class Card {
+export default class PlaceCard {
     constructor(cardsArr, openImageCallback, api) {
         this.api = api
         this.cardsArr = cardsArr
