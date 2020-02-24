@@ -15,8 +15,9 @@ const moduleObj = (function () {
 
     const infoUser = document.querySelector('.user-info');
     const form = document.forms.newCard;
+    const serverUrl = NODE_ENV === 'development' ? 'http://praktikum.tk/cohort7/' : 'https://praktikum.tk/cohort7/';
     const api = new Api({
-        baseUrl: 'https://praktikum.tk/cohort7/',
+        baseUrl: serverUrl,
         headers: {
             authorization: '6e068203-0879-465a-8f7e-859354fab07f',
             'Content-Type': 'application/json'
