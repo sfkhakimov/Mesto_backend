@@ -1,7 +1,7 @@
 {
   "name": "Homework",
   "homepage": "https://github.com/SFKhakimov/Homework#readme",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Это учебный проект. Он создавался, чтобы применить полученные знания по JavaScript. На сайте можно:\r - добавлять карточки\r - лайкать\r - удалять\r - открыть карточку в полном размере\r - редактировать профиль",
   "main": "index.js",
   "scripts": {
