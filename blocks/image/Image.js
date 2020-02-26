@@ -1,5 +1,5 @@
 // Открытие картинки при клике по ней и закрытие по крестику
-class OpenCard {
+export default class Image {
     constructor(container) {
         this.container = container;
     }

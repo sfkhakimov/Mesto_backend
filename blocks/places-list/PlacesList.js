@@ -1,4 +1,4 @@
-class Cardlist {
+export default class PlacesList {
     // cardsArr это первые 10 карточек
     constructor(container, createCard, api) {
         this.api = api;
