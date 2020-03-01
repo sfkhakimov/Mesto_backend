@@ -1,41 +1,30 @@
 import Popup from '../../popup/Popup.js';
 
 export default class PlaceCardPopup extends Popup {
-    constructor(container, cardlist, api) {
-      super(container.element, container.elemClose);
+    constructor(popup, cardlist, api, popupContent) {
+      super(popup.formValidate, popup.popupClose);
       this.cardlist = cardlist;
       this.api = api;
-      this.popupTitle = document.querySelector('.popup__title');
-      this.popupForm = document.forms.newCard;
-      this.formTitle = this.popupForm.elements.name;
-      this.formSubtitle = this.popupForm.elements.link;
-      this.button = this.popupForm.elements.button;
-      this.spanTitle = document.querySelector('.popup__error');
-      this.spanSubtitle = document.querySelector('.popup__error_pos');
+      this.popupContent = popupContent;
+      this.submitHandler = this.submitHandler.bind(this);
+      this.cardInfo = this.popupContent.querySelector(`.${popup.formValidate.popupForm}`);
     }
   
     open() {
-      super.open(); 
-      this.popupTitle.textContent = 'Новое место';
-      this.formTitle.setAttribute('type', 'text');
-      this.formSubtitle.setAttribute('type', 'url');
-      this.formTitle.setAttribute('placeholder', 'Название');
-      this.formSubtitle.setAttribute('placeholder', 'Ссылка на картинку');
-      this.formTitle.setAttribute('minlength', '2');
-      this.formTitle.setAttribute('maxlength', '30');
-      this.button.textContent = '+';
-      this.button.setAttribute('disabled', true);
-      this.button.setAttribute('id', 'content');
-      this.button.removeAttribute('style', 'background-color: black; color: white');
+      super.open(this.popupContent);
+      this.popupContent.querySelector(`.${this.formValidate.popupForm}`).
+        addEventListener('submit', this.submitHandler);
     }
   
-    submitHandler() {
-      this.api.setCards(this.formTitle.value, this.formSubtitle.value)
+    submitHandler(event) {
+      event.preventDefault(); 
+      this.api.setCards(this.cardInfo.elements.name.value,
+        this.cardInfo.elements.link.value)
       .then((res) => {
         this.cardlist.addCard(res);
       })
-      this.popupForm.reset();
-      super.close();
+      this.cardInfo.reset();
+      super.close(this.popupContent);
     }
   
   }

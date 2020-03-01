@@ -1,39 +1,23 @@
  export default class Popup  {
-  constructor(element, elemClose) {
-    this.element = element;
-    this.elemClose = elemClose;
-    this.openClassName = 'popup_is-opened';
+  constructor(formValidate, popupClose) {
+    this.formValidate = formValidate
+    this.popupClose = popupClose;
     this.close = this.close.bind(this);
-    this.elemClose.addEventListener('click', this.close);
-    this.popupTitle = document.querySelector('.popup__title');
-    this.popupForm = document.forms.newCard;
-    this.formTitle = this.popupForm.elements.name;
-    this.formSubtitle = this.popupForm.elements.link;
-    this.button = this.popupForm.elements.button;
   }
 
-  open() {
-    this.element.classList.add(this.openClassName);
+  open(popup) {
+    popup.querySelector('.popup').classList.add(this.formValidate.popupIsOpened);
+    this.formValidate.checkInputValidity();
+    this.formValidate.setEventListeners();
+    popup.querySelector(`.${this.popupClose}`).addEventListener('click', this.close);
   }
 
   close() {
-    this.popupForm.reset();
-    this.popupTitle.textContent = '';
-    this.formTitle.removeAttribute('type');
-    this.formSubtitle.removeAttribute('type');
-    this.formTitle.removeAttribute('placeholder');
-    this.formSubtitle.removeAttribute('placeholder');
-    this.formTitle.removeAttribute('minlength');
-    this.formSubtitle.removeAttribute('minlength');
-    this.formTitle.removeAttribute('maxlength');
-    this.formSubtitle.removeAttribute('maxlength');
-    this.button.textContent = '';
-    this.button.removeAttribute('disabled');
-    this.button.removeAttribute('id');
-    this.button.setAttribute('style', 'background-color: black; color: white');
-    this.element.classList.remove(this.openClassName);
+
+    document.querySelector(`.${this.formValidate.popupIsOpened}`).
+      querySelector(`.${this.popupClose}`).removeEventListener('click', this.close);
+
+    document.querySelector(`.${this.formValidate.popupIsOpened}`).
+      classList.remove(this.formValidate.popupIsOpened);
   }
-
 }
-
-

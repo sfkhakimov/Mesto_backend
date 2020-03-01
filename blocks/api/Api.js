@@ -54,7 +54,7 @@ export default class Api {
             })
     }
 
-    // При загрузке страницы подгружаю получаю с сервера Имя и Фамилию профиля
+    // При загрузке страницы подгружаю с сервера Имя и Фамилию профиля
     setProfile() {
         return fetch((this.options.baseUrl + 'users/me'), {
             headers: this.options.headers
@@ -87,6 +87,24 @@ export default class Api {
             .catch((err) => {
                 console.log(`Ошибка ${err}`);
             });
+    }
+
+    updateAvatar(link) {
+        return fetch((this.options.baseUrl + 'users/me/avatar'), {
+            method: 'PATCH',
+            headers: this.options.headers,
+            body: JSON.stringify({
+                avatar: link
+            })
+        })
+        .then(res => {
+            if (res.ok) {
+                return res.json();
+            }
+        })
+        .catch((err) => {
+            console.log(`Ошибка ${err}`);
+        });
     }
 
     setLike(likeId) {
