@@ -1,6 +1,8 @@
 export default class FormValidate {
-    constructor(form) {
-        this.form = form;
+    constructor(popupIsOpened, popupForm) {
+        this.popupIsOpened = popupIsOpened;
+        this.popupForm = popupForm;
+        this.checkInputValidity = this.checkInputValidity.bind(this);
         this.errorMessage = {
             link: 'Здесь должна быть ссылка',
             required: 'Это обязательное поле',
@@ -9,11 +11,12 @@ export default class FormValidate {
         }
     }
 // checkInputValidity проверяет на валидность любой input, независимо от того какой попап открыт.
-    checkInputValidity(event) {
+    checkInputValidity() {
         this.isValidForm = false;
+        const popup = document.querySelector(`.${this.popupIsOpened}`);
 
-        const arr = Array.from(event.currentTarget.elements).map((elem) => {
-            const errorMessages = document.querySelector(`#error-${elem.id}`);
+        const arr = Array.from(popup.querySelector(`.${this.popupForm}`).elements).map((elem) => {
+            const errorMessages = popup.querySelector(`.${this.popupForm}`).querySelector(`#error-${elem.id}`);
             if (elem.type !== "submit") {
                 if (elem.type === "url") {
                     if (!elem.checkValidity()) {
@@ -23,13 +26,13 @@ export default class FormValidate {
                 }
                 if (elem.type === "text" && elem.value.length === 0) {
                     errorMessages.textContent = this.errorMessage.required;
-                    this.setSubmitButtonState(event.currentTarget.elements.button);
+                    this.setSubmitButtonState(popup.querySelector(`.${this.popupForm}`).elements.button);
                     return true;
                 }
     
                 if (!elem.checkValidity()) {
                     errorMessages.textContent = this.errorMessage.length;
-                    this.setSubmitButtonState(event.currentTarget.elements.button);
+                    this.setSubmitButtonState(popup.querySelector(`.${this.popupForm}`).elements.button);
                     return true;
                 }
                 errorMessages.textContent = this.errorMessage.noError;
@@ -43,7 +46,7 @@ export default class FormValidate {
     
         if (!this.isValidForm) {
             this.isValidForm = true;
-            this.setSubmitButtonState(event.currentTarget.elements.button);
+            this.setSubmitButtonState(popup.querySelector(`.${this.popupForm}`).elements.button);
         }
     }
 
@@ -58,8 +61,6 @@ export default class FormValidate {
     }
 
     setEventListeners() {
-        this.form.addEventListener('input', (event) => {
-            this.checkInputValidity(event);
-        });
+        document.querySelector(`.${this.popupIsOpened}`).addEventListener('input', this.checkInputValidity)
     }
 }
