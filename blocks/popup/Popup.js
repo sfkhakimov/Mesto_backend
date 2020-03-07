@@ -15,6 +15,8 @@
   close() {
 
     document.querySelector(`.${this.formValidate.popupIsOpened}`).
+    querySelector(`.${this.formValidate.popupForm}`).reset();
+    document.querySelector(`.${this.formValidate.popupIsOpened}`).
       querySelector(`.${this.popupClose}`).removeEventListener('click', this.close);
 
     document.querySelector(`.${this.formValidate.popupIsOpened}`).
