@@ -41,17 +41,15 @@ export default class FormValidate {
         });
     
         this.isValidForm = arr.some( (elem) => {
-            if (elem !== false) return true;
+            return elem !== false;
         });
     
-        if (!this.isValidForm) {
-            this.isValidForm = true;
-            this.setSubmitButtonState(popup.querySelector(`.${this.popupForm}`).elements.button);
-        }
+        this.setSubmitButtonState(popup.querySelector(`.${this.popupForm}`).elements.button);
+
     }
 
     setSubmitButtonState(element) {
-        if (this.isValidForm) {
+        if (!this.isValidForm) {
             element.removeAttribute('disabled');;
             element.setAttribute('style', 'background-color: black; color: white');
         } else {
