@@ -56,7 +56,7 @@ export default class Api {
 
     // При загрузке страницы подгружаю с сервера Имя и Фамилию профиля
     setProfile() {
-        return fetch((this.options.baseUrl + 'users/me'), {
+        return fetch((this.options.baseUrl + 'users/8340d0ec33270a25f2413b69'), {
             headers: this.options.headers
         })
             .then(res => {
