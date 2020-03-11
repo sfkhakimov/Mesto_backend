@@ -9,9 +9,9 @@ const app = express();
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(middleware);
 app.use('/users', users);
 app.use('/cards', cards);
+app.use(middleware);
 
 app.listen(PORT, () => {
   console.log(`Server started at ${PORT}`);
