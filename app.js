@@ -19,6 +19,13 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/users', users);
+app.use((req, res, next) => {
+  req.user = {
+    _id: '5e74e35fb5f45643dc6f608e',
+  };
+
+  next();
+});
 app.use('/cards', cards);
 app.use(middleware);
 
