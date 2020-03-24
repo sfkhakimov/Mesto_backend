@@ -10,13 +10,13 @@ const createUser = (req, res) => {
 const getUser = (req, res) => {
   User.find()
     .then((user) => res.send(user))
-    .catch((err) => res.status(500).send({ message: `Данные не записаны, произошла ошибка - ${err}` }));
+    .catch((err) => res.status(500).send({ message: `Пользователи не найдены, произошла ошибка - ${err}` }));
 };
 
 const getUserId = (req, res) => {
-  User.findById(req.params._id)
+  User.findById(req.params.userId)
     .then((user) => res.send(user))
-    .catch((err) => res.status(500).send({ message: `Данные не записаны, произошла ошибка - ${err}` }));
+    .catch((err) => res.status(404).send({ message: `Пользователь не найден, произошла ошибка - ${err}` }));
 };
 
 const updateUser = (req, res) => {
