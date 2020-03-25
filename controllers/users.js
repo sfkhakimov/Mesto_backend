@@ -1,22 +1,27 @@
 const User = require('../models/user');
+const NotFoundError = require('../errors/notFoundError');
+const InternalServerError = require('../errors/internalServerError');
+
+const notFoundError = new NotFoundError('Запрашиваемый ресурс не найден');
+const internalServerError = new InternalServerError('Запрос не выполнен, произошла ошибка');
 
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then((user) => res.send(user))
-    .catch((err) => res.status(500).send({ message: `Данные не записаны, произошла ошибка - ${err}` }));
+    .catch((err) => res.status(internalServerError.statusCode).send({ message: `${internalServerError.message}` }));
 };
 
 const getUser = (req, res) => {
   User.find()
     .then((user) => res.send(user))
-    .catch((err) => res.status(500).send({ message: `Пользователи не найдены, произошла ошибка - ${err}` }));
+    .catch((err) => res.status(internalServerError.statusCode).send({ message: `${internalServerError.message}` }));
 };
 
 const getUserId = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => res.send(user))
-    .catch((err) => res.status(404).send({ message: `Пользователь не найден, произошла ошибка - ${err}` }));
+    .catch((err) => res.status(notFoundError.statusCode).send({ message: `${notFoundError.message}` }));
 };
 
 const updateUser = (req, res) => {
@@ -29,7 +34,7 @@ const updateUser = (req, res) => {
       upsert: true,
     })
     .then((user) => res.send(user))
-    .catch((err) => res.status(500).send({ message: `Данные не обновлены, произошла ошибка - ${err}` }));
+    .catch((err) => res.status(internalServerError.statusCode).send({ message: `${internalServerError.message}` }));
 };
 
 const updateAvatar = (req, res) => {
@@ -42,7 +47,7 @@ const updateAvatar = (req, res) => {
       upsert: true,
     })
     .then((user) => res.send(user))
-    .catch((err) => res.status(500).send({ message: `Данные не обновлены, произошла ошибка - ${err}` }));
+    .catch((err) => res.status(internalServerError.statusCode).send({ message: `${internalServerError.message}` }));;
 };
 
 module.exports = {

@@ -1,22 +1,27 @@
 const Card = require('../models/card');
+const NotFoundError = require('../errors/notFoundError');
+const InternalServerError = require('../errors/internalServerError');
+
+const notFoundError = new NotFoundError('Запрашиваемый ресурс не найден');
+const internalServerError = new InternalServerError('Запрос не выполнен, произошла ошибка');
 
 const getCard = (req, res) => {
   Card.find()
     .then((card) => res.send(card))
-    .catch((err) => res.status(500).send({ message: `Не удалось получить карточки, произошла ошибка - ${err}` }));
+    .catch((err) => res.status(notFoundError.statusCode).send({ message: `${notFoundError.message}` }));
 };
 
 const createCard = (req, res) => {
   const { name, link, owner = req.user._id } = req.body;
   Card.create({ name, link, owner })
     .then((card) => res.send(card))
-    .catch((err) => res.status(500).send({ message: `Карточка не создана, произошла ошибка - ${err}` }));
+    .catch((err) => res.status(internalServerError.statusCode).send({ message: `${internalServerError.message}` }));
 };
 
 const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => res.send(card))
-    .catch((err) => res.status(500).send({ message: `Карточка не удалена, произошла ошибка - ${err}` }));
+    .catch((err) => res.status(notFoundError.statusCode).send({ message: `${notFoundError.message}` }));
 };
 
 const likesCard = (req, res) => {
@@ -26,7 +31,7 @@ const likesCard = (req, res) => {
     { new: true },
   )
     .then((card) => res.send(card))
-    .catch((err) => res.status(500).send({ message: `Не удалось поставить лайк, произошла ошибка - ${err}` }));
+    .catch((err) => res.status(notFoundError.statusCode).send({ message: `${notFoundError.message}` }));
 };
 
 const deleteLike = (req, res) => {
@@ -36,7 +41,7 @@ const deleteLike = (req, res) => {
     { new: true },
   )
     .then((card) => res.send(card))
-    .catch((err) => res.status(500).send({ message: `Не удалось убрать лайк, произошла ошибка - ${err}` }));
+    .catch((err) => res.status(notFoundError.statusCode).send({ message: `${notFoundError.message}` }));
 };
 
 module.exports = {
