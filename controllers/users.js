@@ -1,53 +1,54 @@
 const User = require('../models/user');
 const NotFoundError = require('../errors/notFoundError');
-const InternalServerError = require('../errors/internalServerError');
-
-const notFoundError = new NotFoundError('Запрашиваемый ресурс не найден');
-const internalServerError = new InternalServerError('Запрос не выполнен, произошла ошибка');
 
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
+    .orFail(() => new NotFoundError('Пользователь не создан'))
     .then((user) => res.send(user))
-    .catch((err) => res.status(internalServerError.statusCode).send({ message: `${internalServerError.message}` }));
+    .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
 };
 
 const getUser = (req, res) => {
   User.find()
+    .orFail(() => new NotFoundError('Пользователи не найдены'))
     .then((user) => res.send(user))
-    .catch((err) => res.status(internalServerError.statusCode).send({ message: `${internalServerError.message}` }));
+    .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
 };
 
 const getUserId = (req, res) => {
   User.findById(req.params.userId)
+    .orFail(() => new NotFoundError('Пользователь не найден'))
     .then((user) => res.send(user))
-    .catch((err) => res.status(notFoundError.statusCode).send({ message: `${notFoundError.message}` }));
+    .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
 };
 
 const updateUser = (req, res) => {
-  const { name, about, _id = req.user._id } = req.body;
-  User.findByIdAndUpdate(_id,
+  const { name, about } = req.body;
+  User.findByIdAndUpdate(req.user._id,
     { name, about },
     {
       new: true,
       runValidators: true,
       upsert: true,
     })
+    .orFail(() => new NotFoundError('Данные пользователя не обновлены'))
     .then((user) => res.send(user))
-    .catch((err) => res.status(internalServerError.statusCode).send({ message: `${internalServerError.message}` }));
+    .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
 };
 
 const updateAvatar = (req, res) => {
-  const { avatar, _id = req.user._id } = req.body;
-  User.findByIdAndUpdate(_id,
+  const { avatar } = req.body;
+  User.findByIdAndUpdate(req.user._id,
     { avatar },
     {
       new: true,
       runValidators: true,
       upsert: true,
     })
+    .orFail(() => new NotFoundError('Аватар не обновлен'))
     .then((user) => res.send(user))
-    .catch((err) => res.status(internalServerError.statusCode).send({ message: `${internalServerError.message}` }));;
+    .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
 };
 
 module.exports = {
