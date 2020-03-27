@@ -1,27 +1,25 @@
 const Card = require('../models/card');
 const NotFoundError = require('../errors/notFoundError');
-const InternalServerError = require('../errors/internalServerError');
-
-const notFoundError = new NotFoundError('Запрашиваемый ресурс не найден');
-const internalServerError = new InternalServerError('Запрос не выполнен, произошла ошибка');
 
 const getCard = (req, res) => {
   Card.find()
+    .orFail(() => new NotFoundError('Не удалось получить карточки'))
     .then((card) => res.send(card))
-    .catch((err) => res.status(notFoundError.statusCode).send({ message: `${notFoundError.message}` }));
+    .catch((err) => res.status(err.statusCode || 500).send({ message: `${err.message}` }));
 };
 
 const createCard = (req, res) => {
   const { name, link, owner = req.user._id } = req.body;
   Card.create({ name, link, owner })
     .then((card) => res.send(card))
-    .catch((err) => res.status(internalServerError.statusCode).send({ message: `${internalServerError.message}` }));
+    .catch((err) => res.status(500).send({ message: `Не удалось создать карточку - ${err.message}` }));
 };
 
 const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
-    .then((card) => res.send(card))
-    .catch((err) => res.status(notFoundError.statusCode).send({ message: `${notFoundError.message}` }));
+    .orFail(() => new NotFoundError('Не удалось удалить карточку'))
+    .then((user) => { res.send(user); console.log(user)})
+    .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
 };
 
 const likesCard = (req, res) => {
@@ -30,8 +28,9 @@ const likesCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
+    .orFail(() => new NotFoundError('Не удалось поставить лайк'))
     .then((card) => res.send(card))
-    .catch((err) => res.status(notFoundError.statusCode).send({ message: `${notFoundError.message}` }));
+    .catch((err) => res.status(err.statusCode || 500).send({ message: `${err.message}` }));
 };
 
 const deleteLike = (req, res) => {
@@ -40,8 +39,9 @@ const deleteLike = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
+    .orFail(() => new NotFoundError('Не удалось убрать лайк'))
     .then((card) => res.send(card))
-    .catch((err) => res.status(notFoundError.statusCode).send({ message: `${notFoundError.message}` }));
+    .catch((err) => res.status(err.statusCode || 500).send({ message: `${err.message}` }));
 };
 
 module.exports = {
