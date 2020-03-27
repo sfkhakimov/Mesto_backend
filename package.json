@@ -1,7 +1,7 @@
 {
   "name": "Homework",
   "homepage": "https://github.com/SFKhakimov/Homework#readme",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "Это учебный проект. Он создавался, чтобы применить полученные знания по JavaScript. На сайте можно:\r - добавлять карточки\r - лайкать\r - удалять\r - открыть карточку в полном размере\r - редактировать профиль",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,7 @@
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.20.1",
     "file-loader": "^5.1.0",
-    "nodemon": "^2.0.2",
+    "nodemon": "^2.0.2"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
