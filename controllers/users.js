@@ -4,9 +4,8 @@ const NotFoundError = require('../errors/notFoundError');
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-    .orFail(() => new NotFoundError('Пользователь не создан'))
     .then((user) => res.send(user))
-    .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
+    .catch((err) => res.status(500).send({ message: `Пользователь не создан - ${err.message}` }));
 };
 
 const getUser = (req, res) => {
