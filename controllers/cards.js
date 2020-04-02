@@ -16,7 +16,7 @@ const createCard = (req, res) => {
 };
 
 const deleteCard = (req, res) => {
-  Card.findByIdAndDelete(req.params.cardId)
+  Card.findOneAndDelete({ _id: req.params.cardId, owner: req.user._id })
     .orFail(() => new NotFoundError('Не удалось удалить карточку'))
     .then((user) => res.send(user))
     .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));

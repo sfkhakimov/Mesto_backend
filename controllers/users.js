@@ -19,7 +19,10 @@ const createUser = (req, res) => {
       password: hash,
       avatar,
     }))
-    .then((user) => res.send(user))
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key');
+      res.cookie('jwt', token, { maxAge: 3600000 * 24 * 7, httpOnly: true }).send(user);
+    })
     .catch((err) => res.status(500).send({ message: `Пользователь не создан - ${err.message}` }));
 };
 
