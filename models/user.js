@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
+    unique: true,
     validate: async function emailValidator(email) {
       return validator.isEmail(email);
     },
@@ -28,7 +29,6 @@ const userSchema = new mongoose.Schema({
   avatar: {
     required: true,
     type: String,
-    unique: true,
     validate: async function typeValidate(url) {
       return validator.isURL(url);
     },
