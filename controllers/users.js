@@ -20,7 +20,7 @@ const createUser = (req, res) => {
       avatar,
     }))
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key');
+      const token = jwt.sign({ _id: user._id }, '9fff22460051528711f3ab535499a758');
       res.cookie('jwt', token, { maxAge: 3600000 * 24 * 7, httpOnly: true }).send(user);
     })
     .catch((err) => res.status(500).send({ message: `Пользователь не создан - ${err.message}` }));
@@ -72,10 +72,10 @@ const login = (req, res) => {
   const { email, password } = req.body;
   User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key');
+      const token = jwt.sign({ _id: user._id }, '9fff22460051528711f3ab535499a758');
       res.cookie('jwt', token, { maxAge: 3600000 * 24 * 7, httpOnly: true }).end();
     })
-    .catch((err) => res.status(401).send({ message: err.message }));
+    .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
 };
 
 module.exports = {
