@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/notFoundError');
+const Conflict = require('../errors/conflict');
 
 const createUser = (req, res) => {
   const {
@@ -19,11 +20,13 @@ const createUser = (req, res) => {
       password: hash,
       avatar,
     }))
-    .then((user) => {
-      const token = jwt.sign({ _id: user._id }, '9fff22460051528711f3ab535499a758');
-      res.cookie('jwt', token, { maxAge: 3600000 * 24 * 7, httpOnly: true }).send(user);
-    })
-    .catch((err) => res.status(500).send({ message: `Пользователь не создан - ${err.message}` }));
+    .then((user) => res.send({
+      name: user.name,
+      about: user.about,
+      email: user.email,
+      avatar: user.avatar,
+    }))
+    .catch((err) => res.status(err.statusCode || 500).send({ message: `Пользователь не создан - ${err.message}` }));
 };
 
 const getUser = (req, res) => {
