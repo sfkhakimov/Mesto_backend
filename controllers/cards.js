@@ -22,7 +22,7 @@ const deleteCard = (req, res) => {
       if (!card.owner.equals(req.user._id)) {
         throw new Forbidden('Вы не можете удалять чужие карточки');
       }
-      Card.findByIdAndDelete(req.params.cardId).orFail(new Error('Карточка не удалена'))
+      Card.findByIdAndDelete(req.params.cardId)
         .then((cards) => res.send(cards));
     })
     .catch((err) => res.status(err.statusCode || 500).send(err.message));
