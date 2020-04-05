@@ -40,11 +40,9 @@ const userSchema = new mongoose.Schema({
 
 userSchema.statics.findUserByCredentials = function findByEmailAndPasword(email, password) {
   return this.findOne({ email }).select('+password')
+    .orFail(new Unauthorized('Неправильная почта или пароль'))
     .then((user) => {
-      if (!user) {
-        throw new Unauthorized('Неправильная почта или пароль');
-      }
-      return bcrypt.compare(password, user.password)
+      bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
             throw new Unauthorized('Неправильная почта или пароль');
