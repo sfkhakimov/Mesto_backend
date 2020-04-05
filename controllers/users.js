@@ -12,21 +12,28 @@ const createUser = (req, res) => {
     password,
     avatar,
   } = req.body;
-  bcrypt.hash(password, 10)
-    .then((hash) => User.create({
-      name,
-      about,
-      email,
-      password: hash,
-      avatar,
-    }))
-    .then((user) => res.send({
-      name: user.name,
-      about: user.about,
-      email: user.email,
-      avatar: user.avatar,
-    }))
-    .catch((err) => res.status(err.statusCode || 500).send({ message: `Пользователь не создан - ${err.message}` }));
+
+  User.find({ email })
+    .then((mail) => {
+      if (mail.length !== 0) {
+        throw new Conflict('Пользователь с таки email уже существует');
+      }
+      bcrypt.hash(password, 10)
+        .then((hash) => User.create({
+          name,
+          about,
+          email,
+          password: hash,
+          avatar,
+        }))
+        .then((user) => res.send({
+          name: user.name,
+          about: user.about,
+          email: user.email,
+          avatar: user.avatar,
+        }));
+    })
+    .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
 };
 
 const getUser = (req, res) => {
