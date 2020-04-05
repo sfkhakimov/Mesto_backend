@@ -1,5 +1,6 @@
 const Card = require('../models/card');
 const NotFoundError = require('../errors/notFoundError');
+const Forbidden = require('../errors/forbidden');
 
 const getCard = (req, res) => {
   Card.find()
@@ -16,10 +17,15 @@ const createCard = (req, res) => {
 };
 
 const deleteCard = (req, res) => {
-  Card.findOneAndDelete({ _id: req.params.cardId, owner: req.user._id })
-    .orFail(() => new NotFoundError('Не удалось удалить карточку'))
-    .then((user) => res.send(user))
-    .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
+  Card.findById(req.params.cardId).orFail(new NotFoundError('Не удалось найти карточку'))
+    .then((card) => {
+      if (!card.owner.equals(req.user._id)) {
+        throw new Forbidden('Вы не можете удалять чужие карточки');
+      }
+      Card.findByIdAndDelete(req.params.cardId).orFail(new Error('Карточка не удалена'))
+        .then((cards) => res.send(cards));
+    })
+    .catch((err) => res.status(err.statusCode || 500).send(err.message));
 };
 
 const likesCard = (req, res) => {
