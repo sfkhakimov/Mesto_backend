@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { JWT_SECRET } = require('../config');
 const User = require('../models/user');
 const NotFoundError = require('../errors/notFoundError');
 const Conflict = require('../errors/conflict');
@@ -82,7 +83,7 @@ const login = (req, res) => {
   const { email, password } = req.body;
   User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, '9fff22460051528711f3ab535499a758');
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET);
       res.cookie('jwt', token, { maxAge: 3600000 * 24 * 7, httpOnly: true }).end();
     })
     .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
