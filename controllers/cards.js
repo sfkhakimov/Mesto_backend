@@ -6,7 +6,7 @@ const getCard = (req, res) => {
   Card.find()
     .orFail(() => new NotFoundError('Не удалось получить карточки'))
     .then((card) => res.send(card))
-    .catch((err) => res.status(err.statusCode || 500).send({ message: `${err.message}` }));
+    .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
 };
 
 const createCard = (req, res) => {
@@ -22,10 +22,10 @@ const deleteCard = (req, res) => {
       if (!card.owner.equals(req.user._id)) {
         throw new Forbidden('Вы не можете удалять чужие карточки');
       }
-      Card.findByIdAndDelete(req.params.cardId)
+      return Card.findByIdAndDelete(req.params.cardId)
         .then((cards) => res.send(cards));
     })
-    .catch((err) => res.status(err.statusCode || 500).send(err.message));
+    .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
 };
 
 const likesCard = (req, res) => {
@@ -36,7 +36,7 @@ const likesCard = (req, res) => {
   )
     .orFail(() => new NotFoundError('Не удалось поставить лайк'))
     .then((card) => res.send(card))
-    .catch((err) => res.status(err.statusCode || 500).send({ message: `${err.message}` }));
+    .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
 };
 
 const deleteLike = (req, res) => {
@@ -47,7 +47,7 @@ const deleteLike = (req, res) => {
   )
     .orFail(() => new NotFoundError('Не удалось убрать лайк'))
     .then((card) => res.send(card))
-    .catch((err) => res.status(err.statusCode || 500).send({ message: `${err.message}` }));
+    .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
 };
 
 module.exports = {
