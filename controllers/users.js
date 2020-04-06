@@ -19,7 +19,7 @@ const createUser = (req, res) => {
       if (mail.length !== 0) {
         throw new Conflict('Пользователь с таки email уже существует');
       }
-      bcrypt.hash(password, 10)
+      return bcrypt.hash(password, 10)
         .then((hash) => User.create({
           name,
           about,
