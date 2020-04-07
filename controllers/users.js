@@ -1,11 +1,40 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { JWT_SECRET } = require('../config');
 const User = require('../models/user');
 const NotFoundError = require('../errors/notFoundError');
+const Conflict = require('../errors/conflict');
 
 const createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
-    .then((user) => res.send(user))
-    .catch((err) => res.status(500).send({ message: `Пользователь не создан - ${err.message}` }));
+  const {
+    name,
+    about,
+    email,
+    password,
+    avatar,
+  } = req.body;
+
+  User.find({ email })
+    .then((mail) => {
+      if (mail.length !== 0) {
+        throw new Conflict('Пользователь с таки email уже существует');
+      }
+      return bcrypt.hash(password, 10)
+        .then((hash) => User.create({
+          name,
+          about,
+          email,
+          password: hash,
+          avatar,
+        }))
+        .then((user) => res.send({
+          name: user.name,
+          about: user.about,
+          email: user.email,
+          avatar: user.avatar,
+        }));
+    })
+    .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
 };
 
 const getUser = (req, res) => {
@@ -50,10 +79,21 @@ const updateAvatar = (req, res) => {
     .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
 };
 
+const login = (req, res) => {
+  const { email, password } = req.body;
+  User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET);
+      res.cookie('jwt', token, { maxAge: 3600000 * 24 * 7, httpOnly: true }).end();
+    })
+    .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
+};
+
 module.exports = {
   createUser,
   getUser,
   getUserId,
   updateUser,
   updateAvatar,
+  login,
 };
