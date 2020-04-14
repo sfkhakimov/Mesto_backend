@@ -7,6 +7,7 @@ const cards = require('./routes/cards');
 const middleware = require('./middleware/middleware');
 const auth = require('./middleware/auth');
 const { login, createUser } = require('./controllers/users');
+const { requestLogger, errorLogger, } = require('./middleware/loggers');
 
 const { PORT } = require('./config');
 
@@ -21,6 +22,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(requestLogger);
 
 app.post('/signup', createUser);
 app.post('/signin', login);
@@ -28,6 +30,8 @@ app.post('/signin', login);
 app.use(auth);
 app.use('/users', users);
 app.use('/cards', cards);
+
+app.use(errorLogger);
 app.use(middleware);
 
 app.listen(PORT, () => {
