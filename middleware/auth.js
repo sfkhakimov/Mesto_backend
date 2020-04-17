@@ -13,7 +13,7 @@ module.exports = (req, res, next) => {
   try {
     payload = jwt.verify(authorization, JWT_SECRET);
   } catch (err) {
-    return res.status(unauthorized.statusCode).send({ message: unauthorized.message });
+    next(err);
   }
   req.user = payload;
 

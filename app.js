@@ -7,7 +7,7 @@ const cards = require('./routes/cards');
 const middleware = require('./middleware/middleware');
 const auth = require('./middleware/auth');
 const { login, createUser } = require('./controllers/users');
-const { requestLogger, errorLogger, } = require('./middleware/loggers');
+const { requestLogger, errorLogger } = require('./middleware/loggers');
 
 const { PORT } = require('./config');
 
@@ -33,6 +33,13 @@ app.use('/cards', cards);
 
 app.use(errorLogger);
 app.use(middleware);
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message } = err;
+  res.srarus(statusCode)
+    .send({
+      message: statusCode === 500 ? 'На сервере произошла ошибка' : message,
+    });
+});
 
 app.listen(PORT, () => {
   console.log(`Server started at ${PORT}`);
