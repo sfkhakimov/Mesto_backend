@@ -11,7 +11,12 @@
 
 ## Сайт проекта
 
-https://sfkhakimov.github.io/Homework/
+https://www.jacquesyvescousteau.tk
+
+## API
+
+Чтобы обратится по api нужно перейти по адресу:
+http://www.api.jacquesyvescousteau.tk
 
 ## Запуск проекта
 
@@ -27,4 +32,4 @@ npm run dev
 
 ## Версия
 
-1.3.2
+1.4.0
