@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { celebrate, Joi } = require('celebrate');
 const { errors } = require('celebrate');
+const validator = require('validator');
 const users = require('./routes/users');
 const cards = require('./routes/cards');
 const middleware = require('./middleware/middleware');
@@ -33,13 +34,20 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
+const method = (value, helpers) => {
+  if (validator.isURL(value)) {
+    return value;
+  }
+  return helpers.message('Поле avatar заполнено некорректно');
+};
+
 app.post('/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().email().required(),
     password: Joi.string().required(),
     name: Joi.string().min(2).max(30).required(),
     about: Joi.string().min(2).max(30).required(),
-    avatar: Joi.string().required(),
+    avatar: Joi.string().custom(method, 'custom validation'),
   }),
 }), createUser);
 app.post('/signin', celebrate({
