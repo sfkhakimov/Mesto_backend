@@ -34,22 +34,21 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-const method = (value, helpers) => {
-  if (validator.isURL(value)) {
-    return value;
-  }
-  return helpers.message('Поле avatar заполнено некорректно');
-};
-
 app.post('/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().email().required(),
     password: Joi.string().required(),
     name: Joi.string().min(2).max(30).required(),
     about: Joi.string().min(2).max(30).required(),
-    avatar: Joi.string().custom(method, 'custom validation'),
+    avatar: Joi.string().custom((value, helpers) => {
+      if (validator.isURL(value)) {
+        return value;
+      }
+      return helpers.message('Поле avatar заполнено некорректно');
+    }),
   }),
 }), createUser);
+
 app.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().email().required(),

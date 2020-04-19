@@ -9,19 +9,17 @@ const {
   deleteLike,
 } = require('../controllers/cards');
 
-const method = (value, helpers) => {
-  if (validator.isURL(value)) {
-    return value;
-  }
-  return helpers.message('Поле avatar заполнено некорректно');
-};
-
 router.get('/', getCard);
 
 router.post('/', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().custom(method, 'custom validation'),
+    link: Joi.string().required().custom((value, helpers) => {
+      if (validator.isURL(value)) {
+        return value;
+      }
+      return helpers.message('Поле avatar заполнено некорректно');
+    }),
   }),
 }), createCard);
 

@@ -8,12 +8,6 @@ const {
   updateAvatar,
 } = require('../controllers/users');
 
-const method = (value, helpers) => {
-  if (validator.isURL(value)) {
-    return value;
-  }
-  return helpers.message('Поле avatar заполнено некорректно');
-};
 
 router.get('/', getUser);
 
@@ -32,7 +26,12 @@ router.patch('/me', celebrate({
 
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().custom(method, 'custom validation'),
+    avatar: Joi.string().required().custom((value, helpers) => {
+      if (validator.isURL(value)) {
+        return value;
+      }
+      return helpers.message('Поле avatar заполнено некорректно');
+    }),
   }),
 }), updateAvatar);
 
