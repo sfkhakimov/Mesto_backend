@@ -28,10 +28,12 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(requestLogger);
 
-app.get('/crash-test', () => {
-  setTimeout(() => {
-    throw new Error('Сервер сейчас упадёт');
-  }, 0);
+app.use((req, res, next) => {
+  const { origin } = req.headers;
+  if (origin === 'http://jacquesyvescousteau.tk/' || origin === 'https://jacquesyvescousteau.tk/') {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+  next();
 });
 
 app.post('/signup', celebrate({
