@@ -1,11 +1,11 @@
+const { JWT_SECRET, NODE_ENV } = process.env;
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { JWT_SECRET } = require('../config');
 const User = require('../models/user');
 const NotFoundError = require('../errors/notFoundError');
 const Conflict = require('../errors/conflict');
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const {
     name,
     about,
@@ -27,31 +27,31 @@ const createUser = (req, res) => {
           password: hash,
           avatar,
         }))
-        .then((user) => res.send({
+        .then((user) => res.status(201).send({
           name: user.name,
           about: user.about,
           email: user.email,
           avatar: user.avatar,
         }));
     })
-    .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
+    .catch(next);
 };
 
-const getUser = (req, res) => {
+const getUser = (req, res, next) => {
   User.find()
     .orFail(() => new NotFoundError('Пользователи не найдены'))
     .then((user) => res.send(user))
-    .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
+    .catch(next);
 };
 
-const getUserId = (req, res) => {
+const getUserId = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail(() => new NotFoundError('Пользователь не найден'))
     .then((user) => res.send(user))
-    .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
+    .catch(next);
 };
 
-const updateUser = (req, res) => {
+const updateUser = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id,
     { name, about },
@@ -62,10 +62,10 @@ const updateUser = (req, res) => {
     })
     .orFail(() => new NotFoundError('Данные пользователя не обновлены'))
     .then((user) => res.send(user))
-    .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
+    .catch(next);
 };
 
-const updateAvatar = (req, res) => {
+const updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id,
     { avatar },
@@ -76,17 +76,17 @@ const updateAvatar = (req, res) => {
     })
     .orFail(() => new NotFoundError('Аватар не обновлен'))
     .then((user) => res.send(user))
-    .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
+    .catch(next);
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
   User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, JWT_SECRET);
+      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret');
       res.cookie('jwt', token, { maxAge: 3600000 * 24 * 7, httpOnly: true }).end();
     })
-    .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
+    .catch(next);
 };
 
 module.exports = {

@@ -2,21 +2,21 @@ const Card = require('../models/card');
 const NotFoundError = require('../errors/notFoundError');
 const Forbidden = require('../errors/forbidden');
 
-const getCard = (req, res) => {
+const getCard = (req, res, next) => {
   Card.find()
     .orFail(() => new NotFoundError('Не удалось получить карточки'))
     .then((card) => res.send(card))
-    .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
+    .catch(next);
 };
 
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const { name, link, owner = req.user._id } = req.body;
   Card.create({ name, link, owner })
     .then((card) => res.send(card))
-    .catch((err) => res.status(500).send({ message: `Не удалось создать карточку - ${err.message}` }));
+    .catch(next);
 };
 
-const deleteCard = (req, res) => {
+const deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId).orFail(new NotFoundError('Не удалось найти карточку'))
     .then((card) => {
       if (!card.owner.equals(req.user._id)) {
@@ -25,10 +25,10 @@ const deleteCard = (req, res) => {
       return Card.findByIdAndDelete(req.params.cardId)
         .then((cards) => res.send(cards));
     })
-    .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
+    .catch(next);
 };
 
-const likesCard = (req, res) => {
+const likesCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -36,10 +36,10 @@ const likesCard = (req, res) => {
   )
     .orFail(() => new NotFoundError('Не удалось поставить лайк'))
     .then((card) => res.send(card))
-    .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
+    .catch(next);
 };
 
-const deleteLike = (req, res) => {
+const deleteLike = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -47,7 +47,7 @@ const deleteLike = (req, res) => {
   )
     .orFail(() => new NotFoundError('Не удалось убрать лайк'))
     .then((card) => res.send(card))
-    .catch((err) => res.status(err.statusCode || 500).send({ message: err.message }));
+    .catch(next);
 };
 
 module.exports = {
